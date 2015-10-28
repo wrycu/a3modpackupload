@@ -1,0 +1,3 @@
+[submodule "mega.py"]
+	path = mega.py
+	url = https://github.com/richardasaurus/mega.py
