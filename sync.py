@@ -1,19 +1,24 @@
 __author__ = 'Owner'
-from os import walk
+from os import walk, remove
 from hashlib import sha1
 from subprocess import PIPE, Popen
 from ConfigParser import ConfigParser
 
 conf_obj = ConfigParser()
 conf_obj.read('a3sync.cfg')
+secret_obj = ConfigParser()
+secret_obj.read('a3sync_secret.cfg')
 conf = {}
 conf['include'] = conf_obj.get('directories', 'include').split('\n')
 conf['digest'] = conf_obj.get('last_run', 'digest')
+filename = conf_obj.get('config', 'file_name')
+conf['api_key'] = secret_obj.get('config', 'api_key')
+
 directories = walk('.')
 command = [
     'rar',
     'a',
-    'upi.rar',
+    filename,
 ]
 
 for directory in directories:
@@ -24,18 +29,18 @@ for directory in directories:
         command.append(the_dir)
     elif directory[0] == '.':
         for the_file in directory[2]:
-            if the_file == 'upi.rar':
-                print "Found old upi.rar.  Deleting it..."
-                Popen(['rm', '-f', 'upi.rar'])
+            if the_file == filename:
+                print "Found old", filename, "Deleting it..."
+                remove(filename)
                 print "Done!"
                 break
 
 # I'm so sorry.
-print "Creating UPI archive..."
+print "Creating archive..."
 stdout = Popen(command, stdout=PIPE).communicate()
 print "Done!"
 
-file_digest = sha1('upi.rar').hexdigest()
+file_digest = sha1(filename).hexdigest()
 if file_digest == conf['digest']:
     print "The archive we just created matches the previously created archive.  Quitting."
     exit(1)
