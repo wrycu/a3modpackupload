@@ -1,6 +1,7 @@
 # Custom ignores
 a3sync_secret.cfg
 @UPI/
+modpack.rar
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -11,30 +11,29 @@ conf_obj.read('a3sync.cfg')
 secret_obj = ConfigParser()
 secret_obj.read('a3sync_secret.cfg')
 conf = {}
-conf['include'] = conf_obj.get('directories', 'include').split('\\n')
+conf['include'] = conf_obj.get('directories', 'include').split(',')
 conf['digest'] = conf_obj.get('last_run', 'digest')
 filename = conf_obj.get('config', 'file_name')
 conf['client_secret'] = secret_obj.get('config', 'client_secret')
 conf['client_id'] = secret_obj.get('config', 'client_id')
 conf['access_token'] = secret_obj.get('config', 'access_token')
-conf['code'] = secret_obj.get('config', 'code')
+conf['auth_code'] = secret_obj.get('config', 'auth_code')
 
 # Value you get after navigating to
-# https://accounts.google.com/o/oauth2/auth?client_id=600859841473-eer6073rtmclngr45bcvjknj9gmvmiqv.apps.googleusercontent.com&response_type=token&scope=https://www.googleapis.com/auth/drive&redirect_uri=http://localhost
-# Uncomment to get the access token
-# TODO:
-# Make this not retarded.
+# https://accounts.google.com/o/oauth2/auth?client_id=600859841473-3o2savl23qfperh4t79paj8qp8qhpe8k.apps.googleusercontent.com&response_type=token&scope=https://www.googleapis.com/auth/drive&redirect_uri=http://leetsaber.com/callback
+# This code converts a token into an access token, but is no longer required because Google updated their API recently
 '''
 reply = requests.post(
     'https://accounts.google.com/o/oauth2/token',
     headers={'Content-Type': 'application/x-www-form-urlencoded'},
-    data='code=' + conf['code'] +
+    data='code=' + conf['auth_code'] +
          '&redirect_uri=http://localhost'
          '&client_id=' + conf['client_id'] +
          '&client_secret=' + conf['client_secret'] +
          '&grant_type=authorization_code'
 )
 
+print reply.text
 reply.raise_for_status()
 access_token = reply.json()['access_token']
 print access_token
@@ -49,12 +48,16 @@ command = [
     filename,
 ]
 
+matched = False
+
 for directory in directories:
     # os.walk returns the directory we walked prepended for whatever reason, so just substr it out
     the_dir = directory[0][2:]
+    print "'", the_dir, "'"
     if the_dir in conf['include']:
         print "Will archive", the_dir
         command.append(the_dir)
+        matched = True
     elif directory[0] == '.':
         for the_file in directory[2]:
             if the_file == filename:
@@ -62,6 +65,10 @@ for directory in directories:
                 remove(filename)
                 print "Done!"
                 break
+
+if not matched:
+    print "Found no mod files. Quitting."
+    exit(1)
 
 # I'm so sorry.
 print "Creating archive..."
