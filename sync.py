@@ -17,8 +17,23 @@ conf['client_id'] = secret_obj.get('config', 'client_id')
 conf['access_token'] = secret_obj.get('config', 'access_token')
 conf['file_id'] = secret_obj.get('config', 'file_id')
 
-# Navigate here to get the access token
-# https://accounts.google.com/o/oauth2/auth?client_id=600859841473-3o2savl23qfperh4t79paj8qp8qhpe8k.apps.googleusercontent.com&response_type=token&scope=https://www.googleapis.com/auth/drive&redirect_uri=http://leetsaber.com/callback
+'''
+# Initial setup:
+#  1. Navigate here to get the access token
+#       https://accounts.google.com/o/oauth2/auth?client_id=600859841473-3o2savl23qfperh4t79paj8qp8qhpe8k.apps.googleusercontent.com&response_type=code&scope=https://www.googleapis.com/auth/drive&redirect_uri=http://leetsaber.com/callback&access_type=offline
+#  2. Execute this to convert an access_code to an authorization_token and refresh_token
+data = {
+    'code': 'CODE_HERE',
+    'client_id': conf['client_id'],
+    'client_secret': conf['client_secret'],
+    'redirect_uri': 'http://leetsaber.com/callback',
+    'grant_type': 'authorization_code'
+}
+reply = requests.post('https://www.googleapis.com/oauth2/v3/token', data=data)
+print reply.text
+print reply.status_code
+exit(0)
+'''
 
 matched = False
 directories = walk('.')
