@@ -23,6 +23,7 @@ conf['file_id'] = secret_obj.get('config', 'file_id')
 #  1.1. Record client ID and client secret in config file
 #  2. Navigate here to get the access token (replace my client ID with yours), noting that the resulting page will contain the access token in the redirected URL, e.g. https://leetsaber.com/callback?code=4/2sf34e#$Fdsvcdsk3S8CdSqQ9o1rns#
 #       https://accounts.google.com/o/oauth2/auth?client_id=600859841473-3o2savl23qfperh4t79paj8qp8qhpe8k.apps.googleusercontent.com&response_type=code&scope=https://www.googleapis.com/auth/drive&redirect_uri=http://leetsaber.com/callback&access_type=offline
+#       TODO: confirm that this actually is scoped to _one_ directory, not all. It's possible to scope to one but I'm not sure this did it. If this is not confirmed, anyone with these tokens can use your entire Google Drive account as you. You've been warned.
 #  2.1. Set the code in the block below ("code")
 #  3. Execute this to convert an access_code to an authorization_token and refresh_token, recording both in the config file
 data = {
