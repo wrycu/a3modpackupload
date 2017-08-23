@@ -19,14 +19,17 @@ conf['file_id'] = secret_obj.get('config', 'file_id')
 
 '''
 # Initial setup:
-#  1. Navigate here to get the access token
+#  1. Create app in Google (https://console.developers.google.com/apis/credentials). Note that you must set "Authorized redirect URIs", but the URI used need not actually return anything. For example, mine just hits my domain and promptly 404s, but it serves to get the access token
+#  1.1. Record client ID and client secret in config file
+#  2. Navigate here to get the access token (replace my client ID with yours), noting that the resulting page will contain the access token in the redirected URL, e.g. https://leetsaber.com/callback?code=4/2sf34e#$Fdsvcdsk3S8CdSqQ9o1rns#
 #       https://accounts.google.com/o/oauth2/auth?client_id=600859841473-3o2savl23qfperh4t79paj8qp8qhpe8k.apps.googleusercontent.com&response_type=code&scope=https://www.googleapis.com/auth/drive&redirect_uri=http://leetsaber.com/callback&access_type=offline
-#  2. Execute this to convert an access_code to an authorization_token and refresh_token
+#  2.1. Set the code in the block below ("code")
+#  3. Execute this to convert an access_code to an authorization_token and refresh_token, recording both in the config file
 data = {
     'code': 'CODE_HERE',
     'client_id': conf['client_id'],
     'client_secret': conf['client_secret'],
-    'redirect_uri': 'http://leetsaber.com/callback',
+    'redirect_uri': 'http://leetsaber.com/callback',  # replace with the callback URI you defined in your app
     'grant_type': 'authorization_code'
 }
 reply = requests.post('https://www.googleapis.com/oauth2/v3/token', data=data)
@@ -35,6 +38,7 @@ print reply.status_code
 exit(0)
 '''
 
+#  NOTE: All code beyond here is used to actually upload the file
 matched = False
 directories = walk('.')
 command = [
